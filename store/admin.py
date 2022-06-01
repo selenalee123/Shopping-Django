@@ -1,7 +1,7 @@
 from audioop import reverse
 from turtle import title
 from django.db.models.query import QuerySet
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
 from django.db.models.aggregates import Count
@@ -22,10 +22,10 @@ class InventoryFilter(admin.SimpleListFilter):
         if self.value() == '<10':
             return queryset.filter(inventory__lt=10)
 
-
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ['title', 'products_count']
+    search_fields= ['title']
 
     @admin.display(ordering='products_count')  # sorting
     def products_count(self, collection):
@@ -46,6 +46,13 @@ class CollectionAdmin(admin.ModelAdmin):
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['collection']
+    # write a in tile accordingly slug will follow 
+    prepopulated_fields= {
+        'slug' : ['title']
+    }
+    # clear inventory 
+    actions = ['clear_inventory']
     # new field: 'inventory_status','colection_title'
     list_display = ['title', 'unit_price',
                     'inventory_status', 'colection_title']
@@ -64,6 +71,14 @@ class ProductAdmin(admin.ModelAdmin):
             return 'Low'
         return 'OK'
 
+    @admin.action(description='Clear inventory')
+    def clear_inventory(self, request, queryset):
+        updated_count= queryset.update(inventory=0)
+        self.message_user(
+            request,
+            f'{updated_count} products were successfully updated',
+            messages.ERROR
+        )
 
 @admin.register(models.Customer)
 class ProductAdmin(admin.ModelAdmin):
