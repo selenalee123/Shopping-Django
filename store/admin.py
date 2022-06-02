@@ -5,6 +5,8 @@ from django.contrib import admin, messages
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
 from django.db.models.aggregates import Count
+
+from tags.models import TaggedItem
 from . import models
 # Register your models here.
 
@@ -44,6 +46,7 @@ class CollectionAdmin(admin.ModelAdmin):
         )
 
 
+
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     autocomplete_fields = ['collection']
@@ -80,8 +83,9 @@ class ProductAdmin(admin.ModelAdmin):
             messages.ERROR
         )
 
+
 @admin.register(models.Customer)
-class ProductAdmin(admin.ModelAdmin):
+class CustomerAdmin(admin.ModelAdmin):
     list_display = ['first_name', 'last_name', 'membership', 'orders']
     list_editable = ['membership']
     ordering = ['first_name', 'last_name']
@@ -104,7 +108,15 @@ class ProductAdmin(admin.ModelAdmin):
             orders_count=Count('order')
         )
 
+class OrderItemInline(admin.TabularInline):# or StackInline
+    model = models.OrderItem
+    autocomplete_fields= ['product'] 
+    min_num= 0
+    max_num = 10
+    extra = 0
 
 @admin.register(models.Order)
 class OderAdmin(admin.ModelAdmin):
+    inlines = [OrderItemInline]
     list_display = ['id', 'placed_at', 'customer']
+    autocomplete_fields= ['customer']
