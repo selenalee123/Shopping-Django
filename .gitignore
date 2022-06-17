@@ -1,0 +1,26 @@
+### Django ###
+*.log
+*.log.*
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media
+dump.rdb
+.idea
+*.DS_Store
+/test_files/
+/tmp/
+
+# Tests
+htmlcov
+.coverage
+
+# Generated
+*.mo
+
+venv
+
+# Editor
+.vscode
