@@ -21,8 +21,9 @@ class Tag(models.Model):
     def __str__(self) -> str:
         return self.label
 
+
 class TaggedItem(models.Model):
-    objects = TaggedItemManager() ## Task Item manager in playground TagItem
+    objects = TaggedItemManager()
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
